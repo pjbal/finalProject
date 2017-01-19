@@ -23,6 +23,8 @@ function KEKOData = NSItoFEKO1( fileName )
     
     headerLines = NSIReadHeader1(readFileID);
     
+    fclose(readFileID); %%add error checks
+    
     noHeaderLines = size(headerLines);%recod number of header lines for ofset of data read
       
     headerArgs = SortNSIHead1(headerLines); %removed for testing
@@ -52,8 +54,26 @@ function KEKOData = NSItoFEKO1( fileName )
         argSelector=argSelector +1; 
     end
     
-    KEKOData = NSIReadData(fileName, noRowsData, noHeaderLines(2), noColumns); %read in block of data in the file
+    dataRead = NSIReadData(fileName, noRowsData, noHeaderLines(2), noColumns); %read in block of data in the file
     
-    fclose(readFileID); %%add error checks
+    %------------------------------------------------------------------------------------------------
+    dbFields = [3,5,7];
+    rColm = [3, 5, 7];%%%%%%%%%%%%%%%%%%%%%
+    thColm = [4, 6, 8];
+    
+    %convert from polar to planner complex format given a DB 
+    
+    
+    %convert db columns to degreas
+    dataRead = dBColumn2Deg(dataRead, dbFields);
+    
+    %convert from polar to cartesian
+    [x, y]= pol2cartDeg( dataRead, rColm, thColm );
+        
+    %------------------------------------------------------------------------------------------------
+    
+    KEKOData = dataRead;
+    
+    
 end
 
