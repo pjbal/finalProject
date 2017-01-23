@@ -17,7 +17,7 @@
 
   Additional Comments:   
 %}
-function KEKOData = NSItoFEKO1( fileName )
+function dataWrite = NSItoFEKO1( fileName )
     
     readFileID = fopen(fileName); %%add error checks
     
@@ -57,22 +57,27 @@ function KEKOData = NSItoFEKO1( fileName )
     dataRead = NSIReadData(fileName, noRowsData, noHeaderLines(2), noColumns); %read in block of data in the file
     
     %------------------------------------------------------------------------------------------------
+    %carry out necessary data conversions
     dbFields = [3,5,7];
-    rColm = [3, 5, 7];%%%%%%%%%%%%%%%%%%%%%
-    thColm = [4, 6, 8];
+    magColm = [3, 5, 7];%%%%%%%%%%%%%%%%%%%%%
+    angColm = [4, 6, 8];
+    thetPhiColm = [1, 2]
     
-    %convert from polar to planner complex format given a DB 
     
+    %convert from polar to planner complex format given a DB    
     
     %convert db columns to degreas
     dataRead = dBColumn2Deg(dataRead, dbFields);
     
-    %convert from polar to cartesian
-    [x, y]= pol2cartDeg( dataRead, rColm, thColm );
+    %convert from cartesian vector form to spheical vector form
+    [magTheta, angTheta, magPhi, angPhi]= custCart2SphVec( dataRead(:,magColm), dataRead(:,angColm), dataRead(:,thetPhiColm));
         
     %------------------------------------------------------------------------------------------------
     
-    KEKOData = dataRead;
+    %------------------------------------------------------------------------------------------------
+    %prepare output matrix
+    
+    dataWrite = [dataRead(:,thetPhiColm) magTheta angTheta magPhi angPhi];
     
     
 end
