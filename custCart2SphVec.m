@@ -26,26 +26,48 @@
 
 function [magTheta, angTheta, magPhi, angPhi] = custCart2SphVec( magi, angi, thetaPhi )
 
+    
+    
+    
+%-------------------------------------------------------------------------
+% not working as phi inputs to cart2sphvec must be +-90
+% 
+%     %create complex vector using provided magnitudes and phases for x, y
+%     %and z components and transpose to get into correct format of three
+%     %rows as
+%     coordVec = transpose(complex(magi, angi));
+%
+%     %carry out conversion from cartesian to spherical
+%     for i = 1 : size(thetaPhi)%loop through data elements
+%         sphVec = cart2sphvec(coordVec(:, i), thetaPhi(i, 1), thetaPhi(i, 2));
+%     end
+%
+%      %correct to right orientation of three columns by samples in rows    
+%      sphVec = transpose(sphVec);
+%-------------------------------------------------------------------------
+    
     %create complex vector using provided magnitudes and phases for x, y
-    %and z components and transpose to get into correct format of three
-    %rows as
-    coordVec = transpose(complex(magi, angi));
-    
+    %and z components
+    coordVec = complex(magi, angi);
+
     %carry out conversion from cartesian to spherical
-    for i = 1 : size(thetaPhi)%loop through data elements
-        sphVec = cart2sphvec(coordVec(:, i), thetaPhi(i, 1), thetaPhi(i, 2));
-    end
+    sphVec(:, 1) = coordVec(:, 1)*sind(thetaPhi(1))*cosd(thetaPhi(2)) + coordVec(:, 2)*sind(thetaPhi(1))*sind(thetaPhi(2)) + coordVec(:, 3)*cosd(thetaPhi(1));
+    sphVec(:, 2) = coordVec(:, 1)*cosd(thetaPhi(1))*cosd(thetaPhi(2)) + coordVec(:, 2)*cosd(thetaPhi(1))*sind(thetaPhi(2)) - coordVec(:, 3)*sind(thetaPhi(1));
+    sphVec(:, 3) = - coordVec(:, 1)*sind(thetaPhi(2)) + coordVec(:, 2)*cosd(thetaPhi(2));
+
     
-    %correct to right orientation of three columns by samples in rows
-    sphVec = transpose(sphVec);
-     
     %calculte the magnitude and angle of vectors for:
     %elevation (theta)
-    magTheta=abs(sphVec(2));
-    angTheta=angle(sphVec(2));
+    magTheta=abs(sphVec(:,2));
+    angTheta2=angle(sphVec(:,2));
+    angTheta= atan2d(imag(sphVec(:,2)), real(sphVec(:,2)));
+    A= angTheta-angTheta2;
+    sum(A(:,:))
+    
     %azimuth (phi)
-    magPhi=abs(sphVec(1));
-    angPhi=angle(sphVec(1));
+    magPhi=abs(sphVec(:,1));
+    %angPhi=angle(sphVec(:,1));
+    angPhi= atan2d(imag(sphVec(:,1)), real(sphVec(:,1)));
        
 end
 

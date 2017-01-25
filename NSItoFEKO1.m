@@ -61,7 +61,7 @@ function dataWrite = NSItoFEKO1( fileName )
     dbFields = [3,5,7];
     magColm = [3, 5, 7];%%%%%%%%%%%%%%%%%%%%%
     angColm = [4, 6, 8];
-    thetPhiColm = [1, 2]
+    thetPhiColm = [1, 2];
     
     
     %convert from polar to planner complex format given a DB    
@@ -75,9 +75,38 @@ function dataWrite = NSItoFEKO1( fileName )
     %------------------------------------------------------------------------------------------------
     
     %------------------------------------------------------------------------------------------------
-    %prepare output matrix
+    %prepare output matrix  
     
-    dataWrite = [dataRead(:,thetPhiColm) magTheta angTheta magPhi angPhi];
+    dataWrite = [dataRead(:,thetPhiColm) magTheta angTheta magPhi angPhi]; 
+    
+   dataWrite = double(dataWrite);
+   
+   
+   file_out = fopen('Test1.ffe', 'w');
+   
+   for i = 1:noRowsData
+    
+        
+     fprintf(file_out, '%6.2f\t%6.2f\t%+2.6e\t%+2.6e\t%+2.6e\t%+2.6e\t%' char(13) char(10), dataRead(i,thetPhiColm(1)), dataRead(i,thetPhiColm(2)),...
+            magTheta(i), angTheta(i), magPhi(i), angPhi(i));
+    
+   end
+   
+   fclose(file_out);
+   
+    %------------------------------------------------------------------------------------------------
+    
+    %------------------------------------------------------------------------------------------------
+    %Prepare header
+    
+    
+    %------------------------------------------------------------------------------------------------
+    
+    %------------------------------------------------------------------------------------------------
+    %Write to output file 
+    dlmwrite('Test.ffe', dataWrite, ' ', 15, 0);
+    
+    %------------------------------------------------------------------------------------------------
     
     
 end
