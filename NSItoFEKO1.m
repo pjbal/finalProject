@@ -108,6 +108,20 @@ function dataWrite = NSItoFEKO1( fileName )
     %Prepare header
     
     
+    HeaderBlockArguments = {'File Type', ''; 'File Format', ''; 'Source ', ''; 'Date', ''}; 
+        
+    solutionBlockArguments = {'File Type', ''; 'File Format', ''; 'Source',...
+        ''; 'Date', ''; 'Request Name', ''; 'Frequency', ''; 'Origin', '';...
+        'u-Vector', ''; 'v-Vector', ''; 'No. of [Phi]Samples', ''; 'No. of [Theta]Samples', '';...
+        'Result Type', ''; 'Incident Wave Direction', ''; 'No. of Header Lines', ''};
+    
+    HeaderBlockArguments{1,2} = 'Far field';
+    HeaderBlockArguments{1,2} = '3';
+    
+    
+     
+    
+    
     %------------------------------------------------------------------------------------------------
     
     %------------------------------------------------------------------------------------------------
