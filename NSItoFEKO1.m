@@ -15,9 +15,12 @@
   Revision: 
   Revision 0.01 - File Created
 
-  Additional Comments:   
+  Additional Comments:
 %}
 function dataWrite = NSItoFEKO1( fileName )
+
+    %------------------------------------------------------------------------------------------------
+    %read and sort header
     
     readFileID = fopen(fileName); %%add error checks
     
@@ -54,23 +57,38 @@ function dataWrite = NSItoFEKO1( fileName )
         argSelector=argSelector +1; 
     end
     
+    %------------------------------------------------------------------------------------------------
+    
+    %------------------------------------------------------------------------------------------------
+    %read in data
+    
     dataRead = NSIReadData(fileName, noRowsData, noHeaderLines(2), noColumns); %read in block of data in the file
     
     %------------------------------------------------------------------------------------------------
+    
+    
+    %------------------------------------------------------------------------------------------------
     %carry out necessary data conversions
-    dbFields = [3,5,7];
-    magColm = [3, 5, 7];%%%%%%%%%%%%%%%%%%%%%
+    magColm = [3, 5, 7];
     angColm = [4, 6, 8];
     thetPhiColm = [1, 2];
     
-    
-    %convert from polar to planner complex format given a DB    
-    
     %convert db columns to degreas
-    dataRead = dBColumn2Deg(dataRead, dbFields);
+    dataRead = dBColumn2Deg(dataRead, magColm);%change to avoide passing whole of data!!!!!!!!
+    
+    
+    %convert from polar to rectangualr complex format given a DB
+    %convert from polar form to rectangualar form
+    %real compomponents
+    realComp = dataRead(:,magColm) .* cosd(dataRead(:,angColm));
+    
+    %imaginary component
+    imagComp = dataRead(:,magColm) .* sind(dataRead(:,angColm));
+    
+    
     
     %convert from cartesian vector form to spheical vector form
-    [magTheta, angTheta, magPhi, angPhi]= custCart2SphVec( dataRead(:,magColm), dataRead(:,angColm), dataRead(:,thetPhiColm));
+    [magTheta, angTheta, magPhi, angPhi]= custCart2SphVec( realComp, imagComp, dataRead(:,thetPhiColm));
         
     %------------------------------------------------------------------------------------------------
     
@@ -82,17 +100,7 @@ function dataWrite = NSItoFEKO1( fileName )
    dataWrite = double(dataWrite);
    
    
-   file_out = fopen('Test1.ffe', 'w');
    
-   for i = 1:noRowsData
-    
-        
-     fprintf(file_out, '%6.2f\t%6.2f\t%+2.6e\t%+2.6e\t%+2.6e\t%+2.6e\t%' char(13) char(10), dataRead(i,thetPhiColm(1)), dataRead(i,thetPhiColm(2)),...
-            magTheta(i), angTheta(i), magPhi(i), angPhi(i));
-    
-   end
-   
-   fclose(file_out);
    
     %------------------------------------------------------------------------------------------------
     
@@ -104,7 +112,7 @@ function dataWrite = NSItoFEKO1( fileName )
     
     %------------------------------------------------------------------------------------------------
     %Write to output file 
-    dlmwrite('Test.ffe', dataWrite, ' ', 15, 0);
+    dlmwrite('Test.ffe', dataWrite, 'delimiter', ' ', 'roffset', 15, 'coffset', 0, 'precision','%+2.6E');
     
     %------------------------------------------------------------------------------------------------
     
