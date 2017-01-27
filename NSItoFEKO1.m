@@ -179,7 +179,18 @@ function dataWrite = NSItoFEKO1( fileName )
     
     %------------------------------------------------------------------------------------------------
     %Write to output file 
-    dlmwrite('Test.ffe', dataWrite, 'delimiter', ' ', 'roffset', 15, 'coffset', 0, 'precision','%+2.6E');
+    
+    OutputFileNme = 'Test.ffe'
+    OutputDelimiter = ' ';
+    
+    ouputFileID = fopen(OutputFileNme, 'w');
+    
+    for i = 1 : sizeNewHeader(1)
+        fprintf(ouputFileID, '%s\r\n', newHeader{i});
+    end
+    
+    
+    dlmwrite(OutputFileNme, dataWrite, '-append', 'delimiter',OutputDelimiter, 'roffset', sizeNewHeader(1), 'coffset', 0, 'precision','%+2.6E');
     
     %------------------------------------------------------------------------------------------------
     
