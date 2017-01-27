@@ -28,7 +28,7 @@ function dataWrite = NSItoFEKO1( fileName )
     
     fclose(readFileID); %%add error checks
     
-    noHeaderLines = size(headerLines);%recod number of header lines for ofset of data read
+    sizeHeaderLines = size(headerLines);%recod number of header lines for ofset of data read
       
     headerArgs = SortNSIHead1(headerLines); %removed for testing
     
@@ -62,7 +62,7 @@ function dataWrite = NSItoFEKO1( fileName )
     %------------------------------------------------------------------------------------------------
     %read in data
     
-    dataRead = NSIReadData(fileName, noRowsData, noHeaderLines(2), noColumns); %read in block of data in the file
+    dataRead = NSIReadData(fileName, noRowsData, sizeHeaderLines(2), noColumns); %read in block of data in the file
     
     %------------------------------------------------------------------------------------------------
     
@@ -109,17 +109,70 @@ function dataWrite = NSItoFEKO1( fileName )
     
     
     HeaderBlockArguments = {'File Type', ''; 'File Format', ''; 'Source ', ''; 'Date', ''}; 
+    sizeHeaderBlockArguments = size(HeaderBlockArguments);
         
-    solutionBlockArguments = {'File Type', ''; 'File Format', ''; 'Source',...
-        ''; 'Date', ''; 'Request Name', ''; 'Frequency', ''; 'Origin', '';...
+    solutionBlockArguments = {'Request Name', ''; 'Frequency', ''; 'Origin', '';...
         'u-Vector', ''; 'v-Vector', ''; 'No. of [Phi]Samples', ''; 'No. of [Theta]Samples', '';...
         'Result Type', ''; 'Incident Wave Direction', ''; 'No. of Header Lines', ''};
+    sizeSolutionBlockArguments = size(solutionBlockArguments);
     
     HeaderBlockArguments{1,2} = 'Far field';
     HeaderBlockArguments{1,2} = '3';
     
+    for i = 1 : noHeaderArgs(1)
+        switch char(headerArgs(i,1))
+            case ['FREQUENCY (MHz)' char(13) char(10)]
+                solutionBlockArguments(2,1) = headerArgs{i,2};
+                
+            case ['HEADERSTART' char(13) char(10)]
+                solutionBlockArguments(7,2) = headerArgs{i,2};
+                solutionBlockArguments(6,2) = headerArgs{i,3};
+                
+        end        
+                       
+    end
     
-     
+    
+    headerBlockIndicator = '##';
+    
+    sizeNewHeader = [0, 1];
+    newHeader = [];
+    
+    for k = 1 : sizeHeaderBlockArguments(1)
+        if (not(strcmp(HeaderBlockArguments(k,2), '')))
+            sizeNewHeader(1) = sizeNewHeader(1) + 1;
+            newHeader{sizeNewHeader(1)} = [headerBlockIndicator char(HeaderBlockArguments(k,1)) ': ' char(HeaderBlockArguments(k,2))];
+            
+        end
+    end
+    
+    commentIndicator = '*';
+    for l = 1 : sizeHeaderLines(1)
+        
+        commentHeaderLines{l} = [commentIndicator char(headerLines(l))];
+        
+    end
+    
+    sizeNewHeader(1) = sizeNewHeader(1) + sizeHeaderLines(1);
+    
+    newHeader = [newHeader; commentHeaderLines];    
+    
+    
+    solutionBlockIndicator = '#';
+    
+    for k = 1 : sizeSolutionBlockArguments(1)
+        if (not(strcmp(solutionBlockArguments(k,2), '')))
+            sizeNewHeader(1) = sizeNewHeader(1) + 1;
+            newHeade{sizeNewHeader(1)} = [solutionBlockIndicator char(solutionBlockArguments(k,1)) ': ' char(solutionBlockArguments(k,2))];
+            
+        end
+    end  
+    
+    
+    
+    sizeNewHeader(1) = sizeNewHeader(1) + 1;
+    newHeader{sizeNewHeader(1)} = ['#   Theta   Phi Re(Etheta)  Im(Etheta)  Re(Ephi)    Im(Ephi)'];
+
     
     
     %------------------------------------------------------------------------------------------------
