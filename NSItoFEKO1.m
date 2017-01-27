@@ -17,12 +17,27 @@
 
   Additional Comments:
 %}
-function dataWrite = NSItoFEKO1( fileName )
-
+function dataWrite = NSItoFEKO1( inputFileName, outputFileName)
+    %------------------------------------------------------------------------------------------------
+    %General information
+    originalFormat = 'NSI';
+    newFormat = 'FEKO';
+    %------------------------------------------------------------------------------------------------
+    
+    %------------------------------------------------------------------------------------------------
+    %Information about format
+    headerBlockIndicator = '##';
+    commentIndicator = '**';  
+    solutionBlockIndicator = '#';
+    fileExtension = '.ffe';
+    OutputDelimiter = ' ';
+    
+    %------------------------------------------------------------------------------------------------
+    
     %------------------------------------------------------------------------------------------------
     %read and sort header
     
-    readFileID = fopen(fileName); %%add error checks
+    readFileID = fopen(inputFileName); %%add error checks
     
     headerLines = NSIReadHeader1(readFileID);
     
@@ -62,7 +77,7 @@ function dataWrite = NSItoFEKO1( fileName )
     %------------------------------------------------------------------------------------------------
     %read in data
     
-    dataRead = NSIReadData(fileName, noRowsData, sizeHeaderLines(2), noColumns); %read in block of data in the file
+    dataRead = NSIReadData(inputFileName, noRowsData, sizeHeaderLines(2), noColumns); %read in block of data in the file
     
     %------------------------------------------------------------------------------------------------
     
@@ -122,7 +137,7 @@ function dataWrite = NSItoFEKO1( fileName )
     for i = 1 : noHeaderArgs(1)
         switch char(headerArgs(i,1))
             case ['FREQUENCY (MHz)' char(13) char(10)]
-                solutionBlockArguments(2,1) = headerArgs{i,2};
+                solutionBlockArguments(2,2) = headerArgs{i,2};
                 
             case ['HEADERSTART' char(13) char(10)]
                 solutionBlockArguments(7,2) = headerArgs{i,2};
@@ -132,11 +147,10 @@ function dataWrite = NSItoFEKO1( fileName )
                        
     end
     
+        
+    sizeNewHeader = [0, 1]; %matrix to hold size of new header
+    newHeader = {}; %cells to hold arguements of new header  
     
-    headerBlockIndicator = '##';
-    
-    sizeNewHeader = [0, 1];
-    newHeader = [];
     
     for k = 1 : sizeHeaderBlockArguments(1)
         if (not(strcmp(HeaderBlockArguments(k,2), '')))
@@ -146,24 +160,39 @@ function dataWrite = NSItoFEKO1( fileName )
         end
     end
     
-    commentIndicator = '*';
-    for l = 1 : sizeHeaderLines(1)
-        
-        commentHeaderLines{l} = [commentIndicator char(headerLines(l))];
+    %add empty lines to header to break up
+     sizeNewHeader(1) = sizeNewHeader(1) + 1;
+     newHeader{sizeNewHeader(1),1} = [char(13) char(10)]; %add new line characters to next cell of header
+    
+     
+    sizeCommentHeaderLines = [0,1];
+    
+    
+    commentHeaderLines{1,1} = [commentIndicator 'File transalted from origional format- ' originalFormat ', to- ' newFormat '\r\n'];
+    commentHeaderLines{2,1} = [commentIndicator 'Origional Header:\r\n'];
+    
+    sizeCommentHeaderLines(1) = sizeCommentHeaderLines(1) +2;
+    
+    for l = 1 : sizeHeaderLines(2)
+    
+        sizeCommentHeaderLines(1) = sizeCommentHeaderLines(1) + 1;
+        commentHeaderLines{sizeCommentHeaderLines(1),1} = [commentIndicator char(headerLines(1,l))];
         
     end
     
-    sizeNewHeader(1) = sizeNewHeader(1) + sizeHeaderLines(1);
+    sizeNewHeader(1) = sizeNewHeader(1) + sizeCommentHeaderLines(1);
     
-    newHeader = [newHeader; commentHeaderLines];    
+    newHeader = [newHeader; commentHeaderLines];
     
+    %add empty lines to header to break up
+    sizeNewHeader(1) = sizeNewHeader(1) + 1;
+    newHeader{sizeNewHeader(1),1} = [char(13) char(10)];
     
-    solutionBlockIndicator = '#';
     
     for k = 1 : sizeSolutionBlockArguments(1)
         if (not(strcmp(solutionBlockArguments(k,2), '')))
             sizeNewHeader(1) = sizeNewHeader(1) + 1;
-            newHeade{sizeNewHeader(1)} = [solutionBlockIndicator char(solutionBlockArguments(k,1)) ': ' char(solutionBlockArguments(k,2))];
+            newHeader{sizeNewHeader(1)} = [solutionBlockIndicator char(solutionBlockArguments(k,1)) ': ' char(solutionBlockArguments(k,2))];
             
         end
     end  
@@ -180,17 +209,21 @@ function dataWrite = NSItoFEKO1( fileName )
     %------------------------------------------------------------------------------------------------
     %Write to output file 
     
-    OutputFileNme = 'Test.ffe'
-    OutputDelimiter = ' ';
-    
-    ouputFileID = fopen(OutputFileNme, 'w');
+    %check file name has correct extension  -TO BE altered to furthercheck!!
+    sizeOutputFileName= size(outputFileName);
+    if (not(strcmp(outputFileName((sizeOutputFileName(2) -3):sizeOutputFileName(2)), fileExtension)))
+        outputFileName = [outputFileName fileExtension];
+    end
+    %%%%%%
+        
+    ouputFileID = fopen(outputFileName, 'w');
     
     for i = 1 : sizeNewHeader(1)
         fprintf(ouputFileID, '%s\r\n', newHeader{i});
     end
     
     
-    dlmwrite(OutputFileNme, dataWrite, '-append', 'delimiter',OutputDelimiter, 'roffset', sizeNewHeader(1), 'coffset', 0, 'precision','%+2.6E');
+    dlmwrite(outputFileName, dataWrite, '-append', 'delimiter',OutputDelimiter, 'precision','%+2.6E');%'roffset', sizeNewHeader(1), 'coffset', 0,
     
     %------------------------------------------------------------------------------------------------
     
