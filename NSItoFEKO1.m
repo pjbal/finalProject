@@ -1,36 +1,50 @@
-%{
-  Queen Mary University of London- School of Electrical Engineering and
-  Computer Science 
-  Engineer: Patrick Balcombe 
- 
-  Create Date:    17/01/2016 
-  File Name:      NSItoFEKO1
-  Project Name:   
-  
-  Description: 
-    Function to convert between NSI and FEKO 
-
-  Dependencies: 
-
-  Revision: 
-  Revision 0.01 - File Created
-
-  Additional Comments:
-%}
 function dataWrite = NSItoFEKO1( inputFileName, outputFileName)
-    %------------------------------------------------------------------------------------------------
+%
+%  Queen Mary University of London- School of Electrical Engineering and
+%   Computer Science 
+%   Engineer: Patrick Balcombe 
+%  
+%   Create Date:    17/01/2016 
+%   File Name:      NSItoFEKO1
+%   Project Name:   
+%   
+%   Description: 
+%     Function to convert between NSI and FEKO 
+% 
+%   Dependencies: 
+% 
+%   Revision: 
+%   Revision 0.01 - File Created
+% 
+%   Additional Comments:
+%
+
+%------------------------------------------------------------------------------------------------
     %General information
     originalFormat = 'NSI';
     newFormat = 'FEKO';
     %------------------------------------------------------------------------------------------------
     
     %------------------------------------------------------------------------------------------------
+    
+    %options
+    includePreHeader = 0;
+    
     %Information about format
     headerBlockIndicator = '##';
     commentIndicator = '**';  
     solutionBlockIndicator = '#';
     fileExtension = '.ffe';
     OutputDelimiter = ' ';
+    
+    
+    HeaderBlockArguments = {'File Type', ''; 'File Format', ''; 'Source ', ''; 'Date', ''};
+    
+    solutionBlockArguments = {'Request Name', ''; 'Frequency', ''; 'Origin', '';...
+        'u-Vector', ''; 'v-Vector', ''; 'No. of [Phi]Samples', ''; 'No. of [Theta]Samples', '';...
+        'Result Type', ''; 'Incident Wave Direction', ''; 'No. of Header Lines', ''};
+    
+    newColumnHeaders = ['#   Theta   Phi Re(Etheta)  Im(Etheta)  Re(Ephi)    Im(Ephi)'];
     
     %------------------------------------------------------------------------------------------------
     
@@ -110,32 +124,25 @@ function dataWrite = NSItoFEKO1( inputFileName, outputFileName)
     %------------------------------------------------------------------------------------------------
     %prepare output matrix  
     
-    dataWrite = [dataRead(:,thetPhiColm) magTheta angTheta magPhi angPhi]; 
-    
-   dataWrite = double(dataWrite);
-   
-   
-   
+    dataWrite = [dataRead(:,thetPhiColm) magTheta angTheta magPhi angPhi];    
    
     %------------------------------------------------------------------------------------------------
     
     %------------------------------------------------------------------------------------------------
     %Prepare header
     
-    
-    HeaderBlockArguments = {'File Type', ''; 'File Format', ''; 'Source ', ''; 'Date', ''}; 
-    sizeHeaderBlockArguments = size(HeaderBlockArguments);
-        
-    solutionBlockArguments = {'Request Name', ''; 'Frequency', ''; 'Origin', '';...
-        'u-Vector', ''; 'v-Vector', ''; 'No. of [Phi]Samples', ''; 'No. of [Theta]Samples', '';...
-        'Result Type', ''; 'Incident Wave Direction', ''; 'No. of Header Lines', ''};
+    %find the number of possible block and solution header arguments
+    sizeHeaderBlockArguments = size(HeaderBlockArguments);      
     sizeSolutionBlockArguments = size(solutionBlockArguments);
     
+    %add fixed values to relevent header arguemnts
     HeaderBlockArguments{1,2} = 'Far field';
     HeaderBlockArguments{1,2} = '3';
     
-    for i = 1 : noHeaderArgs(1)
-        switch char(headerArgs(i,1))
+    
+    for i = 1 : noHeaderArgs(1) %loop to go through origional header to find values need for new header
+        switch char(headerArgs(i,1)) %origional header arguments
+            
             case ['FREQUENCY (MHz)' char(13) char(10)]
                 solutionBlockArguments(2,2) = headerArgs{i,2};
                 
@@ -143,18 +150,20 @@ function dataWrite = NSItoFEKO1( inputFileName, outputFileName)
                 solutionBlockArguments(7,2) = headerArgs{i,2};
                 solutionBlockArguments(6,2) = headerArgs{i,3};
                 
-        end        
+        end %end of origional header switch case
                        
-    end
+    end %end of origional header switch case
     
         
     sizeNewHeader = [0, 1]; %matrix to hold size of new header
     newHeader = {}; %cells to hold arguements of new header  
     
     
-    for k = 1 : sizeHeaderBlockArguments(1)
-        if (not(strcmp(HeaderBlockArguments(k,2), '')))
-            sizeNewHeader(1) = sizeNewHeader(1) + 1;
+    for k = 1 : sizeHeaderBlockArguments(1) %loop through header block arguments
+        if (not(strcmp(HeaderBlockArguments(k,2), ''))) %check if arguments have been given a value
+            
+            %add header argment which have been given a value to the new header
+            sizeNewHeader(1) = sizeNewHeader(1) + 1; 
             newHeader{sizeNewHeader(1)} = [headerBlockIndicator char(HeaderBlockArguments(k,1)) ': ' char(HeaderBlockArguments(k,2))];
             
         end
@@ -164,43 +173,50 @@ function dataWrite = NSItoFEKO1( inputFileName, outputFileName)
      sizeNewHeader(1) = sizeNewHeader(1) + 1;
      newHeader{sizeNewHeader(1),1} = [char(13) char(10)]; %add new line characters to next cell of header
     
-     
-    sizeCommentHeaderLines = [0,1];
+     if (includePreHeader)%check if the previous header should be included
+         %if the header should be included the place it as comments in the
+         %cell containing the new header
+         
+        sizeCommentHeaderLines = [0,1];%define matrix to hold the size of the array holding the comments about origional file
+
+        %add informaton about origional file and transformation in first
+        %comment lines
+        commentHeaderLines{1,1} = [commentIndicator 'File transalted from origional format- ' originalFormat ', to- ' newFormat '\r\n'];
+        commentHeaderLines{2,1} = [commentIndicator 'Origional Header:\r\n'];
+
+        %increment size of comment array as new lines addded
+        sizeCommentHeaderLines(1) = sizeCommentHeaderLines(1) +2;
+
+        for l = 1 : sizeHeaderLines(2) %loop through all lines of the origional header
+
+            sizeCommentHeaderLines(1) = sizeCommentHeaderLines(1) + 1; %increment size as comented header line about to be added
+            commentHeaderLines{sizeCommentHeaderLines(1),1} = [commentIndicator char(headerLines(1,l))]; %add origional header line with comment indicator to show that it is a comment
+
+        end %end loop through origional header lines
+
+        sizeNewHeader(1) = sizeNewHeader(1) + sizeCommentHeaderLines(1); %add the numner of comment lines to the total number of header lines
+
+        newHeader = [newHeader; commentHeaderLines]; %add the comment lines to the toatal new header
+
+        %add empty lines to header to break up
+        sizeNewHeader(1) = sizeNewHeader(1) + 1;
+        newHeader{sizeNewHeader(1),1} = [char(13) char(10)];
     
+     end %end of header comment if statment
     
-    commentHeaderLines{1,1} = [commentIndicator 'File transalted from origional format- ' originalFormat ', to- ' newFormat '\r\n'];
-    commentHeaderLines{2,1} = [commentIndicator 'Origional Header:\r\n'];
-    
-    sizeCommentHeaderLines(1) = sizeCommentHeaderLines(1) +2;
-    
-    for l = 1 : sizeHeaderLines(2)
-    
-        sizeCommentHeaderLines(1) = sizeCommentHeaderLines(1) + 1;
-        commentHeaderLines{sizeCommentHeaderLines(1),1} = [commentIndicator char(headerLines(1,l))];
-        
-    end
-    
-    sizeNewHeader(1) = sizeNewHeader(1) + sizeCommentHeaderLines(1);
-    
-    newHeader = [newHeader; commentHeaderLines];
-    
-    %add empty lines to header to break up
-    sizeNewHeader(1) = sizeNewHeader(1) + 1;
-    newHeader{sizeNewHeader(1),1} = [char(13) char(10)];
-    
-    
-    for k = 1 : sizeSolutionBlockArguments(1)
-        if (not(strcmp(solutionBlockArguments(k,2), '')))
+    for k = 1 : sizeSolutionBlockArguments(1)%loop through soluton header arguments
+        if (not(strcmp(solutionBlockArguments(k,2), '')))%check if arguments have been given a value
+            
+            %add header argment which have been given a value to the new header            
             sizeNewHeader(1) = sizeNewHeader(1) + 1;
             newHeader{sizeNewHeader(1)} = [solutionBlockIndicator char(solutionBlockArguments(k,1)) ': ' char(solutionBlockArguments(k,2))];
             
         end
     end  
     
-    
-    
+    %add column titles to the header    
     sizeNewHeader(1) = sizeNewHeader(1) + 1;
-    newHeader{sizeNewHeader(1)} = ['#   Theta   Phi Re(Etheta)  Im(Etheta)  Re(Ephi)    Im(Ephi)'];
+    newHeader{sizeNewHeader(1)} = newColumnHeaders;
 
     
     
@@ -216,15 +232,17 @@ function dataWrite = NSItoFEKO1( inputFileName, outputFileName)
     end
     %%%%%%
         
-    ouputFileID = fopen(outputFileName, 'w');
+    ouputFileID = fopen(outputFileName, 'w');%open output file
     
-    for i = 1 : sizeNewHeader(1)
+    %print header to file
+    for i = 1 : sizeNewHeader(1)%loop through all new header lines
         fprintf(ouputFileID, '%s\r\n', newHeader{i});
     end
     
+    fclose(outputFileID);%close output file
     
-    dlmwrite(outputFileName, dataWrite, '-append', 'delimiter',OutputDelimiter, 'precision','%+2.6E');%'roffset', sizeNewHeader(1), 'coffset', 0,
-    
+    %write data to output file
+    dlmwrite(outputFileName, dataWrite, '-append', 'delimiter',OutputDelimiter, 'precision','%+2.6E');
     %------------------------------------------------------------------------------------------------
     
     
