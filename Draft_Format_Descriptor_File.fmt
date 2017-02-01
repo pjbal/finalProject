@@ -1,0 +1,48 @@
+##TranslatorVersion: 1
+##Name: FEKO3
+##Extenson: ffe
+##HeaderBlockIndicator: ##
+##SolutionBlockIndicator: #
+##CommentIndicator: **
+##Deliminator: ' '
+##dataFormat: %+2.6E
+
+%%this is a comment
+
+##BlockArguments[
+~Filetype
+*Required: Yes
+~File Format
+~Source
+~Date
+]
+
+##SolutionArguments[
+~Request Name
+~Frequency
+*Required: Yes
+~Origin
+~u-Vector
+~v-Vector
+~No. of [Phi] Samples
+*Required: Yes
+~No. of [Thete] Samples
+*Required: Yes
+~Result Type
+*opp: 'Gain', 'Directivity', 'RCS',  'Unknown'
+~Incident Wave Direction
+*Required: if
+~No. of Header Lines
+]
+
+##ColumnHeaders[
+~"Theta"
+~"Phi"
+~"Re(Etheta)"
+~"Im(Etheta)"
+~"Re(Ephi)"
+~"Im(Ephi)"
+~"Directivity(Theta)"
+~"Directivity(Phi)"
+~"Directivity(Total)"
+]

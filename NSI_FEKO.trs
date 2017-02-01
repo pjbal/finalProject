@@ -1,0 +1,7 @@
+##OriginFormat: NSI
+##EndFormat: FEKO3
+
+##Process{
+db2Deg(1 2)
+[n 1] = cart2cylin(1 2, 4 5)
+}
