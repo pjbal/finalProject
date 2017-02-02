@@ -30,7 +30,7 @@ function linesRead = NSIReadHeader1(ReadID)
         
     end
 
-    fgets(ReadID); %remove data colum headers
+    fgets(ReadID); %read data colum headers
     
     
 
