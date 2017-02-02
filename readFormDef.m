@@ -1,4 +1,4 @@
-function [formatDef] = readFormDef( formatName )
+function formatDef = readFormDef( formatName )
 %Extenson, HeaderBlockIndicator, SolutionBlockIndicator, CommentIndicator, Deliminator   ,varargout
 
 
@@ -6,7 +6,7 @@ function [formatDef] = readFormDef( formatName )
 %   Computer Science 
 %   Engineer: Patrick Balcombe 
 %  
-%   Create Date:    01/02/2016 
+%   Create Date:    01/02/2017 
 %   File Name:      readFormDef
 %   Project Name:   
 %   
@@ -24,7 +24,9 @@ function [formatDef] = readFormDef( formatName )
         
      fileID = fopen([formatName '.fmt']); %open format descriptor file
      
-     if (fileID>0)
+     if (fileID<0)
+         error('QM:FormatTranslation:FileError', 'Unable to find format information')
+     else
          while(~feof(fileID))
 
              %read line from format def file

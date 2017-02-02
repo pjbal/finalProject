@@ -4,7 +4,7 @@ function dataWrite = NSItoFEKO1( inputFileName, inputFormat, outputFileName, out
 %   Computer Science 
 %   Engineer: Patrick Balcombe 
 %  
-%   Create Date:    17/01/2016 
+%   Create Date:    17/01/2017 
 %   File Name:      NSItoFEKO1
 %   Project Name:   
 %   

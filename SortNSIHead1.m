@@ -1,24 +1,22 @@
-%{
-  Queen Mary University of London- School of Electrical Engineering and
-  Computer Science 
-  Engineer: Patrick Balcombe 
- 
-  Create Date:    17/01/2016 
-  File Name:      SortNSIHead
-  Project Name:   
-  
-  Description: 
-    Function to sort block of header read from file into individual fields
+function fields = SortNSIHead1( fullHeader )
+% 
+%   Queen Mary University of London- School of Electrical Engineering and
+%   Computer Science 
+%   Engineer: Patrick Balcombe 
+%  
+%   Create Date:    17/01/2017 
+%   File Name:      SortNSIHead
+%   Project Name:   
+%   
+%   Description: 
+%     Function to sort block of header read from file into individual fields
+% 
+%   Dependencies: 
+% 
+%   Revision: 
+%   Revision 0.01 - File Created 
+%   Additional Comments:   
 
-  Dependencies: 
-
-  Revision: 
-  Revision 0.01 - File Created 
-  Additional Comments:   
-%}
-
-
-function fields = SortNSIHead( fullHeader )
     headerLines=size(fullHeader);
     fields = {}; %cell to hold various header arguments
     noFields= 0; % counter to store the number of  fields found in the header

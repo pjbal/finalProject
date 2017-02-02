@@ -1,0 +1,1 @@
+converedData =convFormat( 'aaa', 'NSI', 'OutFile', 'FEKO3')
