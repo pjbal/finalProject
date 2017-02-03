@@ -1,30 +1,30 @@
-%{
-  Queen Mary University of London- School of Electrical Engineering and
-  Computer Science 
-  Engineer: Patrick Balcombe 
- 
-  Create Date:    19/01/2016 
-  File Name:      custCart2SphVec
-  Project Name:   
-  
-  Description: 
-    Function to convert given columns from cartesian vectors to spherical
-    vectors.
-  Dependencies: 
 
-  Revision: 
-  Revision 0.01 - File Created 
-  Revision 0.02 - name changed from 'pol2cartDeg' to 'custCart2SphVec' 
-                - transformation from seperate magnitude and phase colums to a single
-                complex vector 
-                - vector passed to matlab function cart2sphvec
-                - return variables added magTheta, angTheta, magPhi, angPhi
-                with use of abs() and angle()
-  the output of 
-  Additional Comments:   
-%}
 
 function [magTheta, angTheta, magPhi, angPhi] = custCart2SphVec( realComps, imagComp, thetaPhi )
+% 
+%   Queen Mary University of London- School of Electrical Engineering and
+%   Computer Science 
+%   Engineer: Patrick Balcombe 
+%  
+%   Create Date:    19/01/2016 
+%   File Name:      custCart2SphVec
+%   Project Name:   
+%   
+%   Description: 
+%     Function to convert given columns from cartesian vectors to spherical
+%     vectors.
+%   Dependencies: 
+% 
+%   Revision: 
+%   Revision 0.01 - File Created 
+%   Revision 0.02 - name changed from 'pol2cartDeg' to 'custCart2SphVec' 
+%                 - transformation from seperate magnitude and phase colums to a single
+%                 complex vector 
+%                 - vector passed to matlab function cart2sphvec
+%                 - return variables added magTheta, angTheta, magPhi, angPhi
+%                 with use of abs() and angle()
+%   the output of 
+%   Additional Comments:   
 
     
     

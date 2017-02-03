@@ -67,16 +67,19 @@ function dataWrite = convFormat( inputFileName, inputFormat, outputFileName, out
            %%%%%to change
            HeaderBlockArguments = {'File Type', ''; 'File Format', ''; 'Source ', ''; 'Date', ''};
                
-        elseif (strcmp(tempFormArg, 'solutionBlockArguments'))      
+      elseif (strcmp(tempFormArg, 'solutionBlockArguments'))      
            %%%%%to change
            solutionBlockArguments = {'Request Name', ''; 'Frequency', ''; 'Origin', '';...
     'u-Vector', ''; 'v-Vector', ''; 'No. of [Phi]Samples', ''; 'No. of [Theta]Samples', '';...
     'Result Type', ''; 'Incident Wave Direction', ''; 'No. of Header Lines', ''};
     
-        elseif (strcmp(tempFormArg, 'newColumnHeaders'))      
+       elseif (strcmp(tempFormArg, 'newColumnHeaders'))      
            %%%%%to change
            %%newColumnHeaders = {};
            newColumnHeaders = ['#   Theta   Phi Re(Etheta)  Im(Etheta)  Re(Ephi)    Im(Ephi)'];
+           
+       else
+           %%unrecognised argument
                
        end
        

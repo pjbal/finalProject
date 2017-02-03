@@ -1,25 +1,20 @@
 ##DefFileVersion: 1
 ##FormatName: FEKO3
 ##Extenson: ffe
-##HeaderBlockIndicator: ##
-##SolutionBlockIndicator: #
-##CommentIndicator: **
+##HeaderBlockIndicator: 
+##SolutionBlockIndicator: *
+##CommentIndicator: 
 ##Deliminator: ' '
 ##dataFormat: %+2.6E
-##IncludeNewHeader: yes
-##IncludePrevHeader: no
-##SolutionBlocks: no
-##HeaderKeyNewLine
-##SolutionKeyNewLine: yes
-##CodeStartIndicator: No. of Header Lines
-##FollowingHeaderLine: yes
-##keyValueSeperator: :
+##IncludeNewHeader: Yes
+##IncludePrevHeader: No
+##SolutionBlocks: No
 
 %this is a comment
 
 ##BlockArguments[
 Filetype
-*Required: yes
+*Required: Yes
 File Format
 Source
 Date
@@ -28,14 +23,14 @@ Date
 ##SolutionArguments[
 Request Name
 Frequency
-*Required: yes
+*Required: Yes
 Origin
 u-Vector
 v-Vector
 No. of [Phi] Samples
-*Required: yes
+*Required: Yes
 No. of [Thete] Samples
-*Required: yes
+*Required: Yes
 Result Type
 *opp: 'Gain', 'Directivity', 'RCS',  'Unknown'
 Incident Wave Direction
