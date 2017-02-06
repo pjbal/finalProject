@@ -59,16 +59,12 @@ function [magTheta, angTheta, magPhi, angPhi] = custCart2SphVec( realComps, imag
 
     
     %calculte the magnitude and angle of vectors for:
-    %elevation (theta)
-    magTheta=abs(sphVec(:,2));
-    %angTheta2=angle(sphVec(:,2)); %in radians so dosen't work
-    angTheta= atan2d(imag(sphVec(:,2)), real(sphVec(:,2)));
+    %elevation (theta)    
+    [magTheta, angTheta] = Complex2PolarDeg(sphVec(:,2));
     
     
     %azimuth (phi)
-    magPhi=abs(sphVec(:,3));
-    %angPhi=angle(sphVec(:,1)); %in radians so dosen't work
-    angPhi= atan2d(imag(sphVec(:,3)), real(sphVec(:,3)));
+    [magPhi, angPhi] = Complex2PolarDeg(sphVec(:,3));
        
 end
 

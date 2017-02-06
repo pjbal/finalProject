@@ -168,7 +168,7 @@ function dataWrite = NSItoFEKO1( inputFileName, inputFormat, outputFileName, out
      sizeNewHeader(1) = sizeNewHeader(1) + 1;
      newHeader{sizeNewHeader(1),1} = [char(13) char(10)]; %add new line characters to next cell of header
     
-     if (includePrevHeader)%check if the previous header should be included
+     if (includePreHeader)%check if the previous header should be included
          %if the header should be included the place it as comments in the
          %cell containing the new header
          
@@ -227,11 +227,11 @@ function dataWrite = NSItoFEKO1( inputFileName, inputFormat, outputFileName, out
     end
     %%%%%%
         
-    ouputFileID = fopen(outputFileName, 'w');%open output file
+    outputFileID = fopen(outputFileName, 'w');%open output file
     
     %print header to file
     for i = 1 : sizeNewHeader(1)%loop through all new header lines
-        fprintf(ouputFileID, '%s\r\n', newHeader{i});
+        fprintf(outputFileID, '%s\r\n', newHeader{i});
     end
     
     fclose(outputFileID);%close output file
