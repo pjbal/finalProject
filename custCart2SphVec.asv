@@ -1,6 +1,6 @@
 
 
-function [magnitude, Phase] = custCart2SphVec( realComps, imagComp, thetaPhi )
+function [magTheta, angTheta, magPhi, angPhi, magR, angR] = custCart2SphVec( realComps, imagComp, thetaPhi )
 % 
 %   Queen Mary University of London- School of Electrical Engineering and
 %   Computer Science 
@@ -58,9 +58,17 @@ function [magnitude, Phase] = custCart2SphVec( realComps, imagComp, thetaPhi )
     sphVec(:, 3) = - coordVec(:, 1).*sind(thetaPhi(:,2)) + coordVec(:, 2).*cosd(thetaPhi(:,2));
 
     
-    %calculte the magnitude and angle of vectors for: 
-    [magnitude, Phase] = Complex2PolarDeg(sphVec(:,1));
+    %calculte the magnitude and angle of vectors for: %%%could these 3
+    %lines 
+    %magnitude R
+    [magR, angR] = Complex2PolarDeg(sphVec(:,2));
     
+    %elevation (theta)    
+    [magTheta, angTheta] = Complex2PolarDeg(sphVec(:,2));
+    
+    
+    %azimuth (phi)
+    [magPhi, angPhi] = Complex2PolarDeg(sphVec(:,3));
        
 end
 

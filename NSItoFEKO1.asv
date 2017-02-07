@@ -109,16 +109,18 @@ function dataWrite = NSItoFEKO1( inputFileName, inputFormat, outputFileName, out
     %imaginary component
     imagComp = dataRead(:,magColm) .* sind(dataRead(:,angColm));
     
-    %convert from cartesian vector form to spheical vector form
-    [sphMagnitude, sphPhase]= custCart2SphVec( realComp, imagComp, dataRead(:,thetPhiColm));
     
-    magTheta = sphMagnitude(2);
     
-    angTheta = sphPhase(2);
-    
-    magPhi = sphMagnitude(3);
-    
-    angPhi = sphPhase(3);
+%     %convert from cartesian vector form to spheical vector form
+%     [sphMagnitude, sphPhase]= custCart2SphVec( realComp, imagComp, dataRead(:,thetPhiColm));
+%     
+%     magTheta = sphMagnitude(2);
+%     
+%     angTheta = sphPhase(2);
+%     
+%     magPhi = sphMagnitude(3);
+%     
+%     angPhi = sphPhase(3);
         
     %------------------------------------------------------------------------------------------------
     
