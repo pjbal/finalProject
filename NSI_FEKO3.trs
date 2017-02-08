@@ -1,0 +1,20 @@
+#OriginFormat: NSI
+#EndFormat: FEKO3
+
+#BlockHeader{
+1OutputData.HeaderName = OutputData.HeaderName
+2OutputData.HeaderName = OutputData.HeaderName
+3OutputData.HeaderName = OutputData.HeaderName
+}
+
+#SolutionHeader{
+OutputData.HeaderName = OutputData.HeaderName
+
+}
+
+#Process1{
+db_to_Deg(1 2)
+[~, 1] = cart2cylin(1 2, 4 5)
+}
+
+

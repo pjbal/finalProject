@@ -1,31 +1,31 @@
-##DefFileVersion: 1
-##FormatName: FEKO3
-##Extenson: ffe
-##HeaderBlockIndicator: ##
-##SolutionBlockIndicator: #
-##CommentIndicator: **
-##Deliminator: ' '
-##dataFormat: %+2.6E
-##IncludeNewHeader: yes
-##IncludePrevHeader: no
-##SolutionBlocks: no
-##HeaderKeyNewLine
-##SolutionKeyNewLine: yes
-##CodeStartIndicator: No. of Header Lines
-##FollowingHeaderLine: yes
-##keyValueSeperator: :
+#DefFileVersion: 1
+#FormatName: FEKO3
+#Extenson: ffe
+#HeaderBlockIndicator: ##
+#SolutionBlockIndicator: #
+#CommentIndicator: **
+#Deliminator: ' '
+#dataFormat: %+2.6E
+#IncludeNewHeader: yes
+#IncludePrevHeader: no
+#SolutionBlocks: no
+#HeaderKeyNewLine: no
+#SolutionKeyNewLine: yes
+#CodeStartIndicator: No. of Header Lines
+#FollowingHeaderLine: yes
+#keyValueSeperator: :
 
 %this is a comment
 
-##BlockArguments[
+#BlockArguments{
 Filetype
 *Required: yes
 File Format
 Source
 Date
-]
+}
 
-##SolutionArguments[
+#SolutionArguments{
 Request Name
 Frequency
 *Required: yes
@@ -41,9 +41,9 @@ Result Type
 Incident Wave Direction
 *Required: if
 No. of Header Lines
-]
+}
 
-##ColumnHeaders[
+#ColumnHeaders{
 "Theta"
 "Phi"
 "Re(Etheta)"
@@ -53,4 +53,4 @@ No. of Header Lines
 "Directivity(Theta)"
 "Directivity(Phi)"
 "Directivity(Total)"
-]
+}
