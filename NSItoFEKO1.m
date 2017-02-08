@@ -48,6 +48,11 @@ function dataWrite = NSItoFEKO1( inputFileName, inputFormat, outputFileName, out
     
     readFileID = fopen(inputFileName); %%add error checks
     
+    %check if file has opened correctly
+    if(readFileID<0)
+        error('matlab:NSItoFEKO1:readandsortheader','unable to open file');
+    end
+    
     headerLines = NSIReadHeader1(readFileID);
     
     fclose(readFileID); %%add error checks

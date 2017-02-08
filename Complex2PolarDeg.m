@@ -1,4 +1,4 @@
-function [ amplitude, phase ] = Complex2PolarDeg( complexVar )
+     function [ amplitude, phase ] = Complex2PolarDeg( complexVar )
 %
 %  Queen Mary University of London- School of Electrical Engineering and
 %   Computer Science 
