@@ -82,9 +82,7 @@ function fileKeyValueStruct = readdatatransformfile( fileName )
         %store the key that has been found for the parameter
         parameterKey = tempLineRead((length(parameterIndicator)+1):(keyEnd-1));
         
-        disp(parameterKey)
        
-        
         %%        
         %if the parameter indicator specifies a single line argument
         if (tempLineRead(keyEnd) == endKeyIndicators(1)) 

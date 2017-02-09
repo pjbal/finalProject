@@ -22,7 +22,11 @@ function [ translationStruct ] = readtranslationfile( inputFormat, outputFormat 
 %   Additional Comments:
 %
 
-    translationStruct = readDataTransformFile([inputFormat '_' outputFormat '.trs']);
+    translationStruct = readdatatransformfile([inputFormat '_' outputFormat '.trs']);
+    
+  
+    
+    
     
 end
    

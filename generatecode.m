@@ -27,7 +27,7 @@ function [ codeLines ] = generatecode( inputHeader, translationprocess )
     nProcessLines = length(translationprocess);
     
     %creat cell to hold the lines of code
-    codeLines = cell(nProcessLines);
+    codeLines = cell(nProcessLines,1);
     
     %counter for the number current process being turned into matlab code
     processLine = 1;
@@ -38,39 +38,26 @@ function [ codeLines ] = generatecode( inputHeader, translationprocess )
         %charcter counter to indicate place in process line
         characterCount = 1;
         
-        newCodeLine='[';
+        newCodeLine = '';
+        useParametersAsTarget = false;
         
         %check if the assignment target is specified
         if(translationprocess{processLine}(1) == '[')
+            
+            newCodeLine='[';
             
             endofAssignmentTarget = strfind(translationprocess{processLine}, ']');
             
             %check if there is a closing bracket for the assignment target
             if (isempty(endofAssignmentTarget))
-               error('matlab:FormatTransaltion:translationprocess:syntax','syntax: No closing bracket for the assignment target, Line: %d\n\t %s', processLine, translationprocess{processLine});
+               error('matlab:FormatTransaltion:generatecode:syntax','syntax: No closing bracket for the assignment target, Line: %d\n\t %s', processLine, translationprocess{processLine});
             elseif (endofAssignmentTarget < 3) %if there is no target between the braces []
-               error('matlab:FormatTransaltion:translationprocess:syntax','syntax: No assignment target indicated between []: %d\n\t %s', processLine, translationprocess{processLine});
-            end
+               error('matlab:FormatTransaltion:generatecode:syntax','syntax: No assignment target indicated between []: %d\n\t %s', processLine, translationprocess{processLine});
+            end            
             
-            %find the commas that seperate the that split the targets, plus
-            %add the first target starting at 2
-%             startOfTargets = [2 rangestrfind(translationprocess{processLine},',',2, endofAssignmentTarget)];
-%              
-%             %loop through assignment targets
-%             for targetCounter = 1 : length(startOfTargets)
-%                 
-%                 spaceLocations = [(startOfTargets(targetCounter)+1 ) rangestrfind(translationprocess{processLine},' ',startOfTargets(targetCounter), (startOfTargets(targetCounter+1))) (startOfTargets(targetCounter+1))];
-%                 
-%                 targetsFound = cell(length(spaceLocations));
-%                 
-%                 for splitCounter = 1: (length(spaceLocations)-1)
-%                     targetsFound(splitCounter) = translationprocess{processLine}(spaceLocations(splitCounter):spaceLocations(splitCounter+1));
-%                 end
-%                 
-%             end
-
-            newCodeLine = [newCodeLine  'data(:,'];
-%                
+            %add start of code line
+            newCodeLine = [newCodeLine  'dataOut(:,['];
+                
             while(characterCount<endofAssignmentTarget)
                 
                %carry on checking from next character
@@ -96,16 +83,101 @@ function [ codeLines ] = generatecode( inputHeader, translationprocess )
                end
                
                if (translationprocess{processLine}(characterCount)==',')
-                   newCodeLine = [newCodeLine '), data(:,'];
+                   newCodeLine = [newCodeLine ']), dataOut(:,['];
                elseif (translationprocess{processLine}(characterCount)==']')
-                   newCodeLine = [newCodeLine ')] = '];
+                   newCodeLine = [newCodeLine '])] = '];
                elseif (translationprocess{processLine}(characterCount)~=' ')
-                   error('matlab:FormatTransaltion:translationprocess:syntax','syntax: unknown character- %c, Line: %d\n\t %s', translationprocess{processLine}(characterCount), processLine, translationprocess{processLine});
+                   error('matlab:FormatTransaltion:generatecode:syntax','syntax: unknown character- %c, Line: %d\n\t %s', translationprocess{processLine}(characterCount), processLine, translationprocess{processLine});
                end
             end
             
         else
-            error('no assignment targer not supported in this version, see later version')
+            %set flag to place the input parameters as the target for the
+            %expesion
+            useParametersAsTarget = true;
+            
+        end
+        
+        %loop through process instruction to find start of function name
+        while not(isletter(translationprocess{processLine}(characterCount)))         
+            %carry on checking from next character
+            characterCount = characterCount + 1;
+            %check if the end of the string has been reached
+            if (characterCount>length(translationprocess{processLine}))
+               error('matlab:FormatTransaltion:generatecode:syntax','syntax: No parameter bracket found  ''('', Line: %d\n\t %s', processLine, translationprocess{processLine});
+            end
+        end 
+        
+        %record at what character the function name starts
+        startFunctionName = characterCount;
+      
+        %loop through process instruction to find end of function name
+        while ((translationprocess{processLine}(characterCount)~='(')&&(translationprocess{processLine}(characterCount)~=' '))   
+            %carry on checking from next character
+            characterCount = characterCount + 1;
+            %check if the end of the string has been reached
+            if (characterCount>length(translationprocess{processLine}))
+               error('matlab:FormatTransaltion:generatecode:syntax','syntax: No parameter bracket found  ''('', Line: %d\n\t %s', processLine, translationprocess{processLine});
+            end
+        end
+
+        %store the function name
+        functionName = translationprocess{processLine}(startFunctionName : (characterCount-1));
+        
+        %add function name to code line being formed
+        newCodeLine = [newCodeLine functionName];
+        
+        %find the end of the parameter list
+        endParameterList = rangestrfind(translationprocess{processLine}, ')', characterCount, length(translationprocess{processLine}) );
+            
+        %check if there is a closing bracket for the parameters
+        if (isempty(endParameterList))
+           error('matlab:FormatTransaltion:generatecode:syntax','syntax: No closing bracket for the assignment target '')'', Line: %d\n\t %s', processLine, translationprocess{processLine});
+        elseif (endParameterList < 3) %if there is no target between the braces []
+           error('matlab:FormatTransaltion:generatecode:syntax','syntax: No assignment target indicated between ''()'': %d\n\t %s', processLine, translationprocess{processLine});
+        end    
+        
+        codeOutParameterStart = length(newCodeLine);
+        
+        %add start of code line
+        newCodeLine = [newCodeLine  '(dataIn(:,['];
+
+        while((characterCount+1)<endParameterList)
+
+           %carry on checking from next character
+           characterCount = characterCount + 1;
+
+           %store the start of the parameter
+           targetStart = characterCount;
+
+            %loop till end of parameter
+           while((translationprocess{processLine}(characterCount)~=' ')&&(translationprocess{processLine}(characterCount)~=',')&& (translationprocess{processLine}(characterCount)~=')'))
+               characterCount = characterCount +1;                   
+           end            
+
+
+           %store target found
+           tempTarget = translationprocess{processLine}(targetStart: characterCount-1);
+           if(isempty(tempTarget))
+               continue;
+           elseif(all(isstrprop(tempTarget, 'digit')))
+                newCodeLine = [newCodeLine ' ' tempTarget];
+           else 
+               error('NOT Implemented as of yet-no non-numerical input, see later version')
+           end
+
+           if (translationprocess{processLine}(characterCount)==',')
+               newCodeLine = [newCodeLine ']), dataIn(:,['];
+           elseif (translationprocess{processLine}(characterCount)==')')
+               newCodeLine = [newCodeLine ']))'];
+           elseif (translationprocess{processLine}(characterCount)~=' ')
+               error('matlab:FormatTransaltion:generatecode:syntax','syntax: unknown character- %c, Line: %d\n\t %s', translationprocess{processLine}(characterCount), processLine, translationprocess{processLine});
+           end
+        end
+        
+        if (useParametersAsTarget)            
+           parameters = newCodeLine(codeOutParameterStart+2:end -1);
+           newCodeLine =['[' parameters '] = ' newCodeLine];
         end
         
         %store line of code just formulated in cell to be returned
@@ -124,6 +196,6 @@ function characterPositions = rangestrfind(stringToSearch, pattern, lowerBound, 
     %function to search a string for a pattern between two points provided
     %in the string
     
-    characterPositions = strfind(stringToSearch(lowerBound:upperBound), pattern)+(lowerBound-1)
+    characterPositions = strfind(stringToSearch(lowerBound:upperBound), pattern)+(lowerBound-1);
 
 end

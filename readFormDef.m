@@ -1,4 +1,5 @@
 function formatDefinitionStruct = readFormDef( formatName )
+%
 %   readFormDef - Function to read in format definition from *.fmt files
 %   
 %   [formatDefinitionStruct] = readFormDef( formatName )
@@ -24,7 +25,7 @@ function formatDefinitionStruct = readFormDef( formatName )
 %   Additional Comments:
 %
     %read file and return structure found
-    formatDefinitionStruct = readDataTransformFile([formatName '.fmt']);
+    formatDefinitionStruct = readdatatransformfile([formatName '.fmt']);
 
 end
 

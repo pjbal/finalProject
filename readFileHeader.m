@@ -1,4 +1,4 @@
-function [ output_args ] = readFileHeader( fileID, CommentIndicator, keyValueSeperator )
+function [ output_args ] = readFileHeader( fileID, formatDefStruct )
 % 
 %   Queen Mary University of London- School of Electrical Engineering and
 %   Computer Science 
@@ -21,31 +21,42 @@ function [ output_args ] = readFileHeader( fileID, CommentIndicator, keyValueSep
     %cell array to store arguments
     sizeHeaderInfo = [0 0];%store size of each section of header of header info, header block followed by any number of
     noSolutionBlock = 0; %store the number of solution blocks found
-    selectHeaderInfo = 1;
+    noHeaderSections = 1;
     headerInfo = {};
+    
+    %create structure to hold the header block arguments
+    headerBlockStruct = struct;
+    
+    %create output cell structre that can grow into more rows if more
+    %headers needed
+    output_args = cell(1, 2);
+    
+    output_args{1,1} = struct
     
     
     while(feof(fileID))%loop through file for header lines
         %read in header line
-        newLine = fgets(fileID);
+        tempReadLine = fgetl(fileID);
         
-         %check if it is a blanc line, if so jump to start of while
-         if ((newLine == -1)||(tempFileLine(1) == CommentIndicator))
-             continue;
-         end
-         
-         %check if the line is a comment
-         if (newLine(1) == CommentIndicator);
-             continue;
-         end
+        %check if line is blank, skip if so
+        if (isempty(tempReadLine))
+            continue;
+        elseif (newLine == - 1) %check if line is blank, skip if so
+            continue
+            
+            %checif line is a comment, skip if so
+        elseif ((isfield(formatDefStruct, 'CommentIndicator'))&& (tempReadLine(1) == formatDefStruct.CommentIndicator))
+            continue
+        end        
          
          %check if the line starts with a block indicator and act acoringly
-         if ((strcmp(headerBlockIndicator, tempFileLine(1:size(headerBlockIndicator)))&&(~isempty(headerBlockIndicator))))
+         if ((isfield(headerBlockIndicator, 'HeaderBlockIndicator'))&& isempty(formatDefStruct.headerBlockIndicator) &&(strcmp(headerBlockIndicator, tempReadLine(1:size(formatDefStruct.headerBlockIndicator)))))
              selectHeaderInfo = 1; %select designated cell for header block arguments
+             sizeOfIndicator = length(formatDefStruct.headerBlockIndicator);
              
-         elseif ((strcmp(solutionBlockIndicator, tempFileLine(1:size(solutionBlockIndicator)))&&(~isempty(solutionBlockIndicator))))
-             selectHeaderInfo = noSolutionBlock + 1; %select cell for current solution block           
-             
+         elseif ((strcmp(formatDefStruct.solutionBlockIndicator, tempFileLine(1:length(formatDefStruct.solutionBlockIndicator)))&&(~isempty(formatDefStruct.solutionBlockIndicator))))
+             noHeaderSections = noSolutionBlock + 1; %select cell for current solution block           
+             sizeOfIndicator = length(formatDefStruct.solutionBlockIndicator);
          else
              error('QM:FileConversion:HeaderRead', 'Unable to read line of header file');
              %Probably line of data- corect code to hadle no indicator of
@@ -56,12 +67,35 @@ function [ output_args ] = readFileHeader( fileID, CommentIndicator, keyValueSep
          
          %find end of key in line at separator between or end of line in
          %which case take whole line as key
-         charCounter = 0;
-         while(((tempFileLine(charCounter)~=keyValueSeperator) || isempty(keyValueSeperator)) && (tempFileLine(charCounter)~=char(13)) && (tempFileLine(charCounter)~=char(10)))
-             charCounter = charCounter +1;
+%          charCounter = sizeOfIndicator;
+%          while(((tempFileLine(charCounter)~=keyValueSeperator) || isempty(keyValueSeperator)) && (tempFileLine(charCounter)~=char(13)) && (tempFileLine(charCounter)~=char(10)))
+%              charCounter = charCounter +1;
+%          end
+         
+         if (isfield(formatDefStruct,keyValueSeperator))
+             endOfKey = findendofkey(tempReadLine, formatDefStruct.keyValueSeperator);
+             
+             endOfKey = endOfKey -1;
+             
+             if (isfield(formatDefStruct,keyValueSameLine)                 
+             
+                 charCounter = endOfKey + 1
+                 
+                 while(isspace(tempReadLine(charCounter)))
+                    charCounter = charCounter +1;
+                 end
+                 
+                 tempArgKey = tempReadLine(charCounter:end);
+         
+             end
+             
+         else
+             endOfKey = length(tempReadLine);
          end
          
-         headerInfo{} = newLine[(size(headerBlockIndicator)+1):charCounter];
+         tempArgKey = tempReadLine((sizeOfIndicator+1):endOfKey);
+         
+         headerInfo{noHeaderSections}(tempArgKey) = tempArgValue;
             
              
         

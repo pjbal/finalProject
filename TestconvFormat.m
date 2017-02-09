@@ -1,1 +1,1 @@
-converedData =convFormat( 'aaa', 'NSI', 'OutFile', 'FEKO3')
+converedData =convFormat( 'feed_wr430_rp_2-1ghz-x_truncated.txt', 'NSI', 'OutFile', 'FEKO3');

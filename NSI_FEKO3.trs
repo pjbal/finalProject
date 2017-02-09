@@ -12,9 +12,11 @@ OutputData.HeaderName = OutputData.HeaderName
 
 }
 
-#Process1{
-db_to_Deg(1 2)
-[~, 1] = cart2cylin(1 2, 4 5)
+#Process{
+db2mag(3 5 7)
+[1 2 3] = complexfrompolardeg(3 5 7, 4 6 8)
+[3 5, 4 6] = custCart2SphVec(3 5 7, 1 2)
+[1 2] = pass(1 2)
 }
 
 

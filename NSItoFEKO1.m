@@ -91,7 +91,7 @@ function dataWrite = NSItoFEKO1( inputFileName, inputFormat, outputFileName, out
     %------------------------------------------------------------------------------------------------
     %read in data
     
-    dataRead = NSIReadData(inputFileName, noRowsData, sizeHeaderLines(2), noColumns); %read in block of data in the file
+    dataRead = readdata(inputFileName, '', noRowsData, sizeHeaderLines(2), noColumns); %read in block of data in the file
     
     %------------------------------------------------------------------------------------------------
     
@@ -103,34 +103,40 @@ function dataWrite = NSItoFEKO1( inputFileName, inputFormat, outputFileName, out
     thetPhiColm = [1, 2];
     
     %convert db columns to degreas
-    dataRead = dBColumn2Deg(dataRead, magColm);%change to avoide passing whole of data!!!!!!!!
+    %dataRead2 = dBColumn2Deg(dataRead, magColm);%change to avoide passing whole of data!!!!!!!!
     
+    dataRead(:, magColm) = db2mag(dataRead(:, magColm));
+    
+  
     
     %convert from polar to rectangualr complex format given a DB
     %convert from polar form to rectangualar form
     %real compomponents
-    realComp = dataRead(:,magColm) .* cosd(dataRead(:,angColm));
+%     realComp = dataRead(:,magColm) .* cosd(dataRead(:,angColm));
+%     
+%     %imaginary component
+%     imagComp = dataRead(:,magColm) .* sind(dataRead(:,angColm));
     
-    %imaginary component
-    imagComp = dataRead(:,magColm) .* sind(dataRead(:,angColm));
+    dataRead(:,magColm) = complexfrompolardeg(dataRead(:,magColm),dataRead(:,angColm));
     
     %convert from cartesian vector form to spheical vector form
-    [sphMagnitude, sphPhase]= custCart2SphVec( realComp, imagComp, dataRead(:,thetPhiColm));
+    [dataWrite(:, [3 5]), dataWrite(:, [4 6])]= custCart2SphVec( dataRead(:,magColm), dataRead(:,thetPhiColm));
     
-    magTheta = sphMagnitude(2);
-    
-    angTheta = sphPhase(2);
-    
-    magPhi = sphMagnitude(3);
-    
-    angPhi = sphPhase(3);
+    dataWrite(:, [1 2]) = pass( dataRead(:,thetPhiColm));
+%     magTheta = sphMagnitude(:, 2);
+%     
+%     angTheta = sphPhase(:, 2);
+%     
+%     magPhi = sphMagnitude(:, 3);
+%     
+%     angPhi = sphPhase(:, 3);
         
     %------------------------------------------------------------------------------------------------
     
     %------------------------------------------------------------------------------------------------
     %prepare output matrix  
     
-    dataWrite = [dataRead(:,thetPhiColm) magTheta angTheta magPhi angPhi];    
+    %dataWrite = [dataRead(:,thetPhiColm) magTheta angTheta magPhi angPhi];    
    
     %------------------------------------------------------------------------------------------------
     

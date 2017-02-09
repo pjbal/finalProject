@@ -1,4 +1,7 @@
-function [charCounter] = findendofkey(characterArray, keyTerminators)
+function [charPosistion] = findendofkey(characterArray, keyTerminators)
+%   findendofkey- Function to find the end of key in a string.
+%           
+%    [charPosistion] = findendofkey(characterArray, keyTerminators)
 %
 %   Queen Mary University of London- School of Electrical Engineering and
 %   Computer Science 
@@ -30,6 +33,7 @@ function [charCounter] = findendofkey(characterArray, keyTerminators)
              %if character i from keyTerminators is character in
              %characterArray selected then reurn this position
              if(characterArray(charCounter)==i)
+                 charPosistion = charCounter; 
                 return;
              end
              
@@ -39,7 +43,7 @@ function [charCounter] = findendofkey(characterArray, keyTerminators)
     end
      
      %return -1 if no end of key has been found
-     charCounter = -1;
+     charPosistion = -1;
      
 end
 
